@@ -17,7 +17,7 @@ class ILLUSIRUNNER_API AIllusiRunnerMimicCharacter : public AIllusiRunnerCharact
 public:
 	AIllusiRunnerMimicCharacter();
 
-	void ReceiveMirrorMove(float Forward, float Right);
+	void ReceiveMirrorMove(FVector WorldDirection);
 
 	void ReceiveMirrorLook(float X_Rotation, float Y_Rotation);
 };

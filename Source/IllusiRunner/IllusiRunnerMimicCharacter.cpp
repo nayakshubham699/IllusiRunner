@@ -8,9 +8,9 @@ AIllusiRunnerMimicCharacter::AIllusiRunnerMimicCharacter()
 	bIsMimic = true;
 }
 
-void AIllusiRunnerMimicCharacter::ReceiveMirrorMove(float Right, float Forward)
+void AIllusiRunnerMimicCharacter::ReceiveMirrorMove(FVector WorldDirection)
 {
-	DoMove(Right, Forward);
+	AddMovementInput(WorldDirection);
 }
 
 void AIllusiRunnerMimicCharacter::ReceiveMirrorLook(float X_Rotation, float Y_Rotation)

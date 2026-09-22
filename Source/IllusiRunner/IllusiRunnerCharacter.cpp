@@ -92,6 +92,13 @@ void AIllusiRunnerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	}
 }
 
+void AIllusiRunnerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+
+}
+
 void AIllusiRunnerCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -106,11 +113,23 @@ void AIllusiRunnerCharacter::Move(const FInputActionValue& Value)
 	// Move Mimic
 	if (Mimic)
 	{
-		Mimic->ReceiveMirrorMove(
-			-MovementVector.X,
-			MovementVector.Y
-		);
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
+		const FVector ForwardDirection =
+			FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		const FVector RightDirection =
+			FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		FVector WorldMovement =
+			ForwardDirection * MovementVector.Y +
+			RightDirection * MovementVector.X;
+
+		// Mirror across the Y axis
+		WorldMovement.Y *= -1.0f;
+
+		Mimic->ReceiveMirrorMove(WorldMovement);
 	}
 }
 
@@ -144,11 +163,11 @@ void AIllusiRunnerCharacter::DoMove(float Right, float Forward)
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		UE_LOG(LogTemp, Display, TEXT("ForwardDirection = %s"), *ForwardDirection.ToString());
+		//UE_LOG(LogTemp, Display, TEXT("ForwardDirection = %s"), *ForwardDirection.ToString());
 
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		UE_LOG(LogTemp, Display, TEXT("RightDirection = %s"), *RightDirection.ToString());
+		//UE_LOG(LogTemp, Display, TEXT("RightDirection = %s"), *RightDirection.ToString());
 
 
 		// add movement 

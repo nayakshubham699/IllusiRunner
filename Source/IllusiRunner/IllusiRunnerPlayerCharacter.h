@@ -17,7 +17,22 @@ class ILLUSIRUNNER_API AIllusiRunnerPlayerCharacter : public AIllusiRunnerCharac
 public:
 	AIllusiRunnerPlayerCharacter();
 
+	virtual void BeginPlay() override;
+
 	virtual void Tick(float DeltaTime) override;
 
-	
+	UPROPERTY(VisibleAnywhere)
+	float PreviousPlayerZ;
+
+	UPROPERTY(VisibleAnywhere)
+	float PreviousMimicZ;
+
+	bool bMimicIsHeightSource;
+
+	float SharedZ;
+
+	bool bPlayerWasGrounded = false;
+	bool bMimicWasGrounded = false;
+
+	void SyncCharacterHeight();
 };
