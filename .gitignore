@@ -46,6 +46,11 @@
 SourceArt/**/*.png
 SourceArt/**/*.tga
 
+# Unreal Engine Content
+Content/*
+!Content/Input/
+!Content/Input/**
+
 # Binary Files
 Binaries/*
 Plugins/**/Binaries/*
