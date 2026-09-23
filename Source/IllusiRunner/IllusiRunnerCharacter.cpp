@@ -197,10 +197,30 @@ void AIllusiRunnerCharacter::DoLook(
 
 void AIllusiRunnerCharacter::DoJumpStart()
 {
-    Jump();
+    UIllusionMovementComponent* Component =
+        FindComponentByClass<UIllusionMovementComponent>();
+
+    if (Component)
+    {
+        Component->JumpPressed();
+    }
+    else
+    {
+        Jump();
+    }
 }
 
 void AIllusiRunnerCharacter::DoJumpEnd()
 {
-    StopJumping();
+    UIllusionMovementComponent* Component =
+        FindComponentByClass<UIllusionMovementComponent>();
+
+    if (Component)
+    {
+        Component->JumpReleased();
+    }
+    else
+    {
+        StopJumping();
+    }
 }
