@@ -1,118 +1,82 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
-
-//#include "IllusiRunnerMimicCharacter.h"
-
 #include "IllusiRunnerCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 
-class AIllusiRunnerMimicCharacter;
-
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
-/**
- *  A simple player-controllable third person character
- *  Implements a controllable orbiting camera
- */
-UCLASS(abstract)
-class AIllusiRunnerCharacter : public ACharacter
+UCLASS(Abstract)
+class ILLUSIRUNNER_API AIllusiRunnerCharacter : public ACharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* CameraBoom;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    USpringArmComponent* CameraBoom;
 
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FollowCamera;
-	
-protected:
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* JumpAction;
-
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* MoveAction;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* LookAction;
-
-	/** Mouse Look Input Action */
-	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* MouseLookAction;
-
-public:
-
-	/** Constructor */
-	AIllusiRunnerCharacter();	
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    UCameraComponent* FollowCamera;
 
 protected:
 
-	virtual void BeginPlay() override;
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* JumpAction;
 
-	/** Initialize input action bindings */
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* MoveAction;
 
-	virtual void Tick(float DeltaTime) override;
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* LookAction;
+
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* MouseLookAction;
+
+public:
+
+    AIllusiRunnerCharacter();
 
 protected:
 
-	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
+    virtual void BeginPlay() override;
 
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
+    virtual void SetupPlayerInputComponent(
+        class UInputComponent* PlayerInputComponent
+    ) override;
 
-public:
+    virtual void Tick(float DeltaTime) override;
 
-	/** Handles move inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoMove(float Right, float Forward);
+    void Move(const FInputActionValue& Value);
 
-	/** Handles look inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoLook(float Yaw, float Pitch);
-
-	/** Handles jump pressed inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpStart();
-
-	/** Handles jump pressed inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpEnd();
+    void Look(const FInputActionValue& Value);
 
 public:
 
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoMove(float Right, float Forward);
 
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoLook(float Yaw, float Pitch);
 
-protected:
-	bool bIsMimic = false;
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoJumpStart();
 
-public:
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<AIllusiRunnerMimicCharacter> MimicClass;
-	
-	UPROPERTY(VisibleAnywhere)
-	AIllusiRunnerMimicCharacter* Mimic;
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DoJumpEnd();
 
+    FORCEINLINE USpringArmComponent* GetCameraBoom() const
+    {
+        return CameraBoom;
+    }
+
+    FORCEINLINE UCameraComponent* GetFollowCamera() const
+    {
+        return FollowCamera;
+    }
 };
-

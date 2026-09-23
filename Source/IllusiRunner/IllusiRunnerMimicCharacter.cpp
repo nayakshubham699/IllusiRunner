@@ -5,7 +5,7 @@
 
 AIllusiRunnerMimicCharacter::AIllusiRunnerMimicCharacter()
 {
-	bIsMimic = true;
+
 }
 
 void AIllusiRunnerMimicCharacter::ReceiveMirrorMove(FVector WorldDirection)

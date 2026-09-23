@@ -1,38 +1,31 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "IllusiRunnerCharacter.h"
 #include "IllusiRunnerPlayerCharacter.generated.h"
 
-/**
- * 
- */
+class UIllusionMovementComponent;
+
 UCLASS()
-class ILLUSIRUNNER_API AIllusiRunnerPlayerCharacter : public AIllusiRunnerCharacter
+class ILLUSIRUNNER_API AIllusiRunnerPlayerCharacter
+    : public AIllusiRunnerCharacter
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
-	AIllusiRunnerPlayerCharacter();
 
-	virtual void BeginPlay() override;
+    AIllusiRunnerPlayerCharacter();
 
-	virtual void Tick(float DeltaTime) override;
+    virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere)
-	float PreviousPlayerZ;
+    virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere)
-	float PreviousMimicZ;
+protected:
 
-	bool bMimicIsHeightSource;
-
-	float SharedZ;
-
-	bool bPlayerWasGrounded = false;
-	bool bMimicWasGrounded = false;
-
-	void SyncCharacterHeight();
+    UPROPERTY(
+        VisibleAnywhere,
+        BlueprintReadOnly,
+        Category = "Illusion"
+    )
+    UIllusionMovementComponent* IllusionMovementComponent;
 };
