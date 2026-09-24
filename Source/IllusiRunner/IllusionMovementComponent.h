@@ -49,21 +49,11 @@ private:
     UCharacterMovementComponent* PlayerMovement;
     UCharacterMovementComponent* MimicMovement;
 
-    FVector LastPlayerLocation;
-    FVector LastMimicLocation;
-
     FVector2D CurrentMovementInput;
 
     bool bMovementInputActive;
-    bool bMovementBlocked;
     bool bPlayerJumping;
 
-    void UpdateHorizontalMovement();
+    void UpdateMimicHorizontalMovement();
     void UpdateVerticalMovement();
-    void StopBothCharacters();
-
-    bool IsPlayerMoving() const;
-    bool IsMimicMoving() const;
-
-
 };

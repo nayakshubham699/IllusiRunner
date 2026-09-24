@@ -18,10 +18,20 @@ class ILLUSIRUNNER_API AIllusiRunnerCharacter : public ACharacter
 {
     GENERATED_BODY()
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(
+        VisibleAnywhere,
+        BlueprintReadOnly,
+        Category = "Components",
+        meta = (AllowPrivateAccess = "true")
+    )
     USpringArmComponent* CameraBoom;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(
+        VisibleAnywhere,
+        BlueprintReadOnly,
+        Category = "Components",
+        meta = (AllowPrivateAccess = "true")
+    )
     UCameraComponent* FollowCamera;
 
 protected:
