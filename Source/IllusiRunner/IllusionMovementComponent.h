@@ -52,9 +52,12 @@ private:
     FVector2D CurrentMovementInput;
 
     FVector LastPlayerLocation;
+    FVector LastMimicLocation;
 
     bool bMovementInputActive;
     bool bPlayerJumping;
+
+    bool bMimicHorizontalBlocked;
 
     void UpdateMimicHorizontalMovement();
     void UpdateVerticalMovement();

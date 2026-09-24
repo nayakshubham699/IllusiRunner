@@ -19,9 +19,12 @@ UIllusionMovementComponent::UIllusionMovementComponent()
     CurrentMovementInput = FVector2D::ZeroVector;
 
     LastPlayerLocation = FVector::ZeroVector;
+    LastMimicLocation = FVector::ZeroVector;
 
     bMovementInputActive = false;
     bPlayerJumping = false;
+
+    bMimicHorizontalBlocked = false;
 }
 
 void UIllusionMovementComponent::BeginPlay()
@@ -60,6 +63,9 @@ void UIllusionMovementComponent::BeginPlay()
 
     LastPlayerLocation =
         Player->GetActorLocation();
+
+    LastMimicLocation =
+        Mimic->GetActorLocation();
 }
 
 void UIllusionMovementComponent::TickComponent(
@@ -89,6 +95,9 @@ void UIllusionMovementComponent::TickComponent(
 
     LastPlayerLocation =
         Player->GetActorLocation();
+
+    LastMimicLocation =
+        Mimic->GetActorLocation();
 }
 
 void UIllusionMovementComponent::Move(FVector2D MovementInput)
@@ -104,8 +113,23 @@ void UIllusionMovementComponent::Move(FVector2D MovementInput)
     {
         bMovementInputActive = false;
 
-        PlayerMovement->StopMovementImmediately();
-        MimicMovement->StopMovementImmediately();
+        FVector PlayerVelocity =
+            PlayerMovement->Velocity;
+
+        PlayerVelocity.X = 0.0f;
+        PlayerVelocity.Y = 0.0f;
+
+        PlayerMovement->Velocity =
+            PlayerVelocity;
+
+        FVector MimicVelocity =
+            MimicMovement->Velocity;
+
+        MimicVelocity.X = 0.0f;
+        MimicVelocity.Y = 0.0f;
+
+        MimicMovement->Velocity =
+            MimicVelocity;
 
         return;
     }
@@ -150,6 +174,31 @@ void UIllusionMovementComponent::Move(FVector2D MovementInput)
     Mimic->AddMovementInput(
         MimicDirection
     );
+
+    if (MovementInput.IsNearlyZero())
+    {
+        bMovementInputActive = false;
+
+        FVector PlayerVelocity =
+            PlayerMovement->Velocity;
+
+        PlayerVelocity.X = 0.0f;
+        PlayerVelocity.Y = 0.0f;
+
+        PlayerMovement->Velocity =
+            PlayerVelocity;
+
+        FVector MimicVelocity =
+            MimicMovement->Velocity;
+
+        MimicVelocity.X = 0.0f;
+        MimicVelocity.Y = 0.0f;
+
+        MimicMovement->Velocity =
+            MimicVelocity;
+
+        return;
+    }
 }
 
 void UIllusionMovementComponent::JumpPressed()
@@ -186,9 +235,16 @@ void UIllusionMovementComponent::UpdateMimicHorizontalMovement()
     const FVector PlayerLocation =
         Player->GetActorLocation();
 
+    const FVector MimicLocation =
+        Mimic->GetActorLocation();
+
     const FVector PlayerDelta =
         PlayerLocation -
         LastPlayerLocation;
+
+    const FVector MimicDelta =
+        MimicLocation -
+        LastMimicLocation;
 
     const float PlayerMovementDistance =
         FVector2D(
@@ -196,32 +252,95 @@ void UIllusionMovementComponent::UpdateMimicHorizontalMovement()
             PlayerDelta.Y
         ).Size();
 
+    const float MimicMovementDistance =
+        FVector2D(
+            MimicDelta.X,
+            MimicDelta.Y
+        ).Size();
+
     const bool bPlayerActuallyMoved =
         PlayerMovementDistance > 0.1f;
 
-    if (bMovementInputActive &&
-        !bPlayerActuallyMoved)
+    const bool bMimicActuallyMoved =
+        MimicMovementDistance > 0.1f;
+
+    if (bMovementInputActive)
     {
-        FVector MimicVelocity =
-            MimicMovement->Velocity;
+        const bool bPlayerBlocked =
+            !bPlayerActuallyMoved &&
+            PlayerMovement->Velocity.Size2D() < 1.0f;
 
-        MimicVelocity.X = 0.0f;
-        MimicVelocity.Y = 0.0f;
+        const bool bMimicBlocked =
+            !bMimicActuallyMoved &&
+            MimicMovement->Velocity.Size2D() < 1.0f;
 
-        MimicMovement->Velocity =
-            MimicVelocity;
+        if (bPlayerBlocked && !bMimicBlocked)
+        {
+            FVector MimicVelocity =
+                MimicMovement->Velocity;
 
-        FVector MimicLocation =
-            Mimic->GetActorLocation();
+            MimicVelocity.X = 0.0f;
+            MimicVelocity.Y = 0.0f;
 
-        MimicLocation.X =
-            PlayerLocation.X;
+            MimicMovement->Velocity =
+                MimicVelocity;
 
-        MimicLocation.Y =
-            -PlayerLocation.Y;
+            FVector NewMimicLocation =
+                MimicLocation;
 
-        Mimic->SetActorLocation(
-            MimicLocation,
+            NewMimicLocation.X =
+                PlayerLocation.X;
+
+            NewMimicLocation.Y =
+                -PlayerLocation.Y;
+
+            Mimic->SetActorLocation(
+                NewMimicLocation,
+                false
+            );
+        }
+        else if (bMimicBlocked && !bPlayerBlocked)
+        {
+            bMimicHorizontalBlocked = true;
+
+            FVector PlayerVelocity =
+                PlayerMovement->Velocity;
+
+            PlayerVelocity.X = 0.0f;
+            PlayerVelocity.Y = 0.0f;
+
+            PlayerMovement->Velocity =
+                PlayerVelocity;
+
+            FVector NewPlayerLocation =
+                PlayerLocation;
+
+            NewPlayerLocation.X =
+                MimicLocation.X;
+
+            NewPlayerLocation.Y =
+                -MimicLocation.Y;
+
+            Player->SetActorLocation(
+                NewPlayerLocation,
+                false
+            );
+        }
+    }
+
+    if (bMimicHorizontalBlocked)
+    {
+        FVector CorrectedPlayerLocation =
+            Player->GetActorLocation();
+
+        CorrectedPlayerLocation.X =
+            MimicLocation.X;
+
+        CorrectedPlayerLocation.Y =
+            -MimicLocation.Y;
+
+        Player->SetActorLocation(
+            CorrectedPlayerLocation,
             false
         );
     }
@@ -244,40 +363,6 @@ void UIllusionMovementComponent::UpdateMimicHorizontalMovement()
     Mimic->SetActorRotation(
         MimicRotation
     );
-
-    if (bMovementInputActive &&
-        bPlayerActuallyMoved)
-    {
-        FVector MimicLocation =
-            Mimic->GetActorLocation();
-
-        const float TargetX =
-            PlayerLocation.X;
-
-        const float TargetY =
-            -PlayerLocation.Y;
-
-        if (!FMath::IsNearlyEqual(
-            MimicLocation.X,
-            TargetX,
-            0.1f) ||
-            !FMath::IsNearlyEqual(
-                MimicLocation.Y,
-                TargetY,
-                0.1f))
-        {
-            MimicLocation.X =
-                TargetX;
-
-            MimicLocation.Y =
-                TargetY;
-
-            Mimic->SetActorLocation(
-                MimicLocation,
-                false
-            );
-        }
-    }
 }
 
 void UIllusionMovementComponent::UpdateVerticalMovement()
