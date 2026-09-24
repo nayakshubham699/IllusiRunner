@@ -18,6 +18,8 @@ UIllusionMovementComponent::UIllusionMovementComponent()
 
     CurrentMovementInput = FVector2D::ZeroVector;
 
+    LastPlayerLocation = FVector::ZeroVector;
+
     bMovementInputActive = false;
     bPlayerJumping = false;
 }
@@ -55,6 +57,9 @@ void UIllusionMovementComponent::BeginPlay()
         MimicMovement =
             Mimic->GetCharacterMovement();
     }
+
+    LastPlayerLocation =
+        Player->GetActorLocation();
 }
 
 void UIllusionMovementComponent::TickComponent(
@@ -81,11 +86,14 @@ void UIllusionMovementComponent::TickComponent(
     UpdateMimicHorizontalMovement();
 
     UpdateVerticalMovement();
+
+    LastPlayerLocation =
+        Player->GetActorLocation();
 }
 
 void UIllusionMovementComponent::Move(FVector2D MovementInput)
 {
-    if (!Player)
+    if (!Player || !Mimic)
     {
         return;
     }
@@ -95,6 +103,10 @@ void UIllusionMovementComponent::Move(FVector2D MovementInput)
     if (MovementInput.IsNearlyZero())
     {
         bMovementInputActive = false;
+
+        PlayerMovement->StopMovementImmediately();
+        MimicMovement->StopMovementImmediately();
+
         return;
     }
 
@@ -126,7 +138,18 @@ void UIllusionMovementComponent::Move(FVector2D MovementInput)
         ForwardDirection * MovementInput.Y +
         RightDirection * MovementInput.X;
 
-    Player->AddMovementInput(PlayerDirection);
+    Player->AddMovementInput(
+        PlayerDirection
+    );
+
+    FVector MimicDirection =
+        PlayerDirection;
+
+    MimicDirection.Y *= -1.0f;
+
+    Mimic->AddMovementInput(
+        MimicDirection
+    );
 }
 
 void UIllusionMovementComponent::JumpPressed()
@@ -163,20 +186,39 @@ void UIllusionMovementComponent::UpdateMimicHorizontalMovement()
     const FVector PlayerLocation =
         Player->GetActorLocation();
 
-    FVector MimicLocation =
-        Mimic->GetActorLocation();
+    const FVector PlayerDelta =
+        PlayerLocation -
+        LastPlayerLocation;
 
-    const float TargetX =
-        PlayerLocation.X;
+    const float PlayerMovementDistance =
+        FVector2D(
+            PlayerDelta.X,
+            PlayerDelta.Y
+        ).Size();
 
-    const float TargetY =
-        -PlayerLocation.Y;
+    const bool bPlayerActuallyMoved =
+        PlayerMovementDistance > 0.1f;
 
-    if (!FMath::IsNearlyEqual(MimicLocation.X, TargetX, 0.01f) ||
-        !FMath::IsNearlyEqual(MimicLocation.Y, TargetY, 0.01f))
+    if (bMovementInputActive &&
+        !bPlayerActuallyMoved)
     {
-        MimicLocation.X = TargetX;
-        MimicLocation.Y = TargetY;
+        FVector MimicVelocity =
+            MimicMovement->Velocity;
+
+        MimicVelocity.X = 0.0f;
+        MimicVelocity.Y = 0.0f;
+
+        MimicMovement->Velocity =
+            MimicVelocity;
+
+        FVector MimicLocation =
+            Mimic->GetActorLocation();
+
+        MimicLocation.X =
+            PlayerLocation.X;
+
+        MimicLocation.Y =
+            -PlayerLocation.Y;
 
         Mimic->SetActorLocation(
             MimicLocation,
@@ -199,7 +241,43 @@ void UIllusionMovementComponent::UpdateMimicHorizontalMovement()
     MimicRotation.Roll =
         PlayerRotation.Roll;
 
-    Mimic->SetActorRotation(MimicRotation);
+    Mimic->SetActorRotation(
+        MimicRotation
+    );
+
+    if (bMovementInputActive &&
+        bPlayerActuallyMoved)
+    {
+        FVector MimicLocation =
+            Mimic->GetActorLocation();
+
+        const float TargetX =
+            PlayerLocation.X;
+
+        const float TargetY =
+            -PlayerLocation.Y;
+
+        if (!FMath::IsNearlyEqual(
+            MimicLocation.X,
+            TargetX,
+            0.1f) ||
+            !FMath::IsNearlyEqual(
+                MimicLocation.Y,
+                TargetY,
+                0.1f))
+        {
+            MimicLocation.X =
+                TargetX;
+
+            MimicLocation.Y =
+                TargetY;
+
+            Mimic->SetActorLocation(
+                MimicLocation,
+                false
+            );
+        }
+    }
 }
 
 void UIllusionMovementComponent::UpdateVerticalMovement()

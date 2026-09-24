@@ -51,6 +51,8 @@ private:
 
     FVector2D CurrentMovementInput;
 
+    FVector LastPlayerLocation;
+
     bool bMovementInputActive;
     bool bPlayerJumping;
 
