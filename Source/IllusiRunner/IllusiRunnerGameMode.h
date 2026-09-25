@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+
+#include "IllusiRunnerPlayerController.h"
+#include "DeathScreen.h"
+
 #include "IllusiRunnerGameMode.generated.h"
 
 /**
@@ -18,6 +22,17 @@ public:
 	
 	/** Constructor */
 	AIllusiRunnerGameMode();
+	virtual void BeginPlay() override;
+
+	void PlayerDied();
+
+	UPROPERTY(EditAnywhere, Category = "DeathScreenWidget")
+	TSubclassOf<UDeathScreen> DeathScreenWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "DeathScreenWidget")
+	UDeathScreen* DeathScreenWidget;
+
+	AIllusiRunnerPlayerController* IllusiRunnerPlayerController;
 };
 
 
