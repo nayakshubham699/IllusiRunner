@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+
+#include "PauseWidget.h"
+#include "EnhancedInputComponent.h"
+
 #include "IllusiRunnerPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -48,5 +52,20 @@ protected:
 
 	/** Returns true if the player should use UMG touch controls */
 	bool ShouldUseTouchControls() const;
+
+public:
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* PauseAction;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UPauseWidget> PauseWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	UPauseWidget* HUDWidget;
+
+	void TogglePause();
+
+	void PauseGame(bool bPause);
 
 };

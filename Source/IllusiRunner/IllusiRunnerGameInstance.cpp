@@ -21,11 +21,21 @@ void UIllusiRunnerGameInstance::LoadNextlevel()
 {
 	if (CurrentLevelIndex < LastLevelIndex)
 	{
-		ChangeLevel(CurrentLevelIndex + 1);
+		LavaDeath = 0;
+		
+		CurrentLevelIndex += CurrentLevelIndex;
+		ChangeLevel(CurrentLevelIndex);
+
+		
+		
 	}
 	else
 	{
+		LavaDeath = 0;
+		
+		
 		RestartGame();
+
 	}
 }
 

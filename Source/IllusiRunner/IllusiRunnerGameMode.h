@@ -7,6 +7,8 @@
 
 #include "IllusiRunnerPlayerController.h"
 #include "DeathScreen.h"
+#include "PauseWidget.h"
+#include "PlayerInteractWidget.h"
 
 #include "IllusiRunnerGameMode.generated.h"
 
@@ -33,6 +35,28 @@ public:
 	UDeathScreen* DeathScreenWidget;
 
 	AIllusiRunnerPlayerController* IllusiRunnerPlayerController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UPauseWidget> PauseWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	UPauseWidget* PauseWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UPlayerInteractWidget> PlayerInteractWidgetClass;
+
+	UPROPERTY(VisibleAnywhere)
+	UPlayerInteractWidget* PlayerInteractWidget;
+
+	float PlayerTalkSeconds = 5.0f;
+
+	int32 PlayerTalkedSeconds;
+
+	FTimerHandle PlayerTalkTime;
+
+	void PauseDisplayToggle(bool bPauseVisible);
+
+	void OnPlayerTalkTimeOut();
 };
 
 
