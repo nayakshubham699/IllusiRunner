@@ -57,6 +57,11 @@ public:
 	void PauseDisplayToggle(bool bPauseVisible);
 
 	void OnPlayerTalkTimeOut();
+
+	void LastLevelCompleted();
+
+	
+
 };
 
 

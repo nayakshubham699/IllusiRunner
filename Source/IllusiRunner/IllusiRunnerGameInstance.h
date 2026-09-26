@@ -16,7 +16,7 @@ class ILLUSIRUNNER_API UIllusiRunnerGameInstance : public UGameInstance
 	
 public:
 	UPROPERTY(EditAnywhere)
-	int32 LastLevelIndex = 3;
+	int32 LastLevelIndex = 4;
 
 	UPROPERTY(VisibleAnywhere)
 	int32 CurrentLevelIndex = 1;

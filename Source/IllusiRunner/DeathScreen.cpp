@@ -5,6 +5,7 @@
 
 #include "IllusiRunnerGameInstance.h"
 
+
 void UDeathScreen::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -24,4 +25,6 @@ void UDeathScreen::OnReplayButtonClick()
 	{
 		IllusiRunnerGameInstance->RestartCurrentLevel();
 	}
+
+	//UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
 }

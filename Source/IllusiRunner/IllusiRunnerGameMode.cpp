@@ -19,6 +19,18 @@ void AIllusiRunnerGameMode::BeginPlay()
 	IllusiRunnerPlayerController = Cast<AIllusiRunnerPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	IllusiRunnerPlayerController->SetInputMode(FInputModeGameOnly());
 
+	/*DeathScreenWidget = CreateWidget<UDeathScreen>(IllusiRunnerPlayerController, DeathScreenWidgetClass);
+	if (DeathScreenWidget)
+	{
+		DeathScreenWidget->AddToViewport();
+		UE_LOG(LogTemp, Display, TEXT("DeathScreenCreated"));
+
+		DeathScreenWidget->GameOverText->SetVisibility(ESlateVisibility::Hidden);
+		DeathScreenWidget->DeathText->SetVisibility(ESlateVisibility::Hidden);
+		DeathScreenWidget->ReplayButton->SetVisibility(ESlateVisibility::Hidden);
+	}
+	*/
+
 
 	AIllusiRunnerPlayerController* PlayerController = Cast<AIllusiRunnerPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
@@ -48,7 +60,7 @@ void AIllusiRunnerGameMode::BeginPlay()
 	UIllusiRunnerGameInstance* IllusiRunnerGameInstance = Cast<UIllusiRunnerGameInstance>(GameInstance);
 	if (IllusiRunnerGameInstance)
 	{
-		if (IllusiRunnerGameInstance->LavaDeath == 3)
+		if (IllusiRunnerGameInstance->LavaDeath == 6)
 		{
 			PlayerInteractWidget->SetPlayerTalkText(FString::Printf(TEXT("Explorer: Please be Patient")));
 			
@@ -58,7 +70,7 @@ void AIllusiRunnerGameMode::BeginPlay()
 
 		}
 
-		if (IllusiRunnerGameInstance->LavaDeath == 5)
+		else if (IllusiRunnerGameInstance->LavaDeath == 10)
 		{
 			PlayerInteractWidget->SetPlayerTalkText(FString::Printf(TEXT("Explorer: You are Really bad at it aren't you")));
 
@@ -68,7 +80,7 @@ void AIllusiRunnerGameMode::BeginPlay()
 
 		}
 
-		if (IllusiRunnerGameInstance->LavaDeath == 7)
+		else if (IllusiRunnerGameInstance->LavaDeath == 14)
 		{
 			PlayerInteractWidget->SetPlayerTalkText(FString::Printf(TEXT("Explorer: Are you Doing this on purpose")));
 
@@ -78,7 +90,7 @@ void AIllusiRunnerGameMode::BeginPlay()
 
 		}
 
-		if (IllusiRunnerGameInstance->LavaDeath == 10)
+		else if (IllusiRunnerGameInstance->LavaDeath == 20)
 		{
 			PlayerInteractWidget->SetPlayerTalkText(FString::Printf(TEXT("Explorer: I am done talking with You")));
 
@@ -149,4 +161,27 @@ void AIllusiRunnerGameMode::PauseDisplayToggle(bool bPauseVisible)
 void AIllusiRunnerGameMode::OnPlayerTalkTimeOut()
 {
 	PlayerInteractWidget->PlayerTalk->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void AIllusiRunnerGameMode::LastLevelCompleted()
+{
+	if (PauseWidget)
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+		AIllusiRunnerPlayerController* PlayerController = Cast<AIllusiRunnerPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		if (PlayerController)
+		{
+			PlayerController->bShowMouseCursor = true;
+		}
+		PauseWidget->SetPauseText(FString::Printf(TEXT("Game Completed")));
+		PauseWidget->PauseText->SetVisibility(ESlateVisibility::Visible);
+
+		//PauseWidget->ReplayButton->SetVisibility(ESlateVisibility::Visible);
+		PauseWidget->ExitButton->SetVisibility(ESlateVisibility::Visible);
+		//PauseWidget->ResumeButton->SetVisibility(ESlateVisibility::Visible);
+		PauseWidget->MainMenuButton->SetVisibility(ESlateVisibility::Visible);
+
+		
+	}
 }
